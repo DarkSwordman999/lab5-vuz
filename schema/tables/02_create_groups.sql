@@ -1,0 +1,6 @@
+CREATE TABLE ГРУППЫ (
+    код SERIAL PRIMARY KEY,
+    название VARCHAR(20) NOT NULL UNIQUE,
+    курс INTEGER NOT NULL,
+    факультет VARCHAR(50) NOT NULL
+);
