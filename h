@@ -85,6 +85,13 @@ if [ -z "$1" ]; then
     echo "  ./h 117 - задача 4.3 лучшие студенты ALL"
     echo "  ./h 199 - выполнить все задачи лабораторной 6"
     echo ""
+    echo "================== ЛАБА 7 ФУНКЦИИ =================="
+    echo "  ./h 200 - создать все функции"
+    echo "  ./h 201 порог - студенты со средним баллом выше порога"
+    echo "  ./h 202 - средний балл по факультетам и сезонам"
+    echo "  ./h 203 - сводная таблица (группы x дисциплины)"
+    echo "  ./h 204 - выполнить всё"
+    echo ""
     echo "================== ЗАПУСК ЛЮБОГО SQL ФАЙЛА =================="
     echo "  ./h файл.sql параметр - выполнить любой SQL-файл"
     exit 1
@@ -245,6 +252,53 @@ case "$1" in
         psql -d $DATABASE -v arg1='Базы данных' -f queries/subqueries/06_grades_above_avg.sql
         psql -d $DATABASE -f queries/subqueries/07_good_students_exists.sql
         psql -d $DATABASE -f queries/subqueries/08_best_students_all.sql
+        ;;
+    200)
+        echo "============================================="
+        echo "ЛАБА 7 - СОЗДАНИЕ ФУНКЦИЙ"
+        echo "============================================="
+        psql -d $DATABASE -f queries/lab7/01_create_functions_task1.sql
+        psql -d $DATABASE -f queries/lab7/02_create_functions_task2.sql
+        psql -d $DATABASE -f queries/lab7/03_create_functions_task3_fixed.sql
+        echo "Все функции созданы"
+        ;;
+    201)
+        if [ -z "$2" ]; then
+            echo "Использование: ./h 201 <порог>"
+            echo "Пример: ./h 201 4.5"
+            echo ""
+            echo "=== Без параметра (порог 4.0) ==="
+            psql -d $DATABASE -f queries/lab7/04_run_lab7.sql -v arg1=4.0
+        else
+            psql -d $DATABASE -f queries/lab7/04_run_lab7.sql -v arg1="$2"
+        fi
+        ;;
+    202)
+        echo "============================================="
+        echo "СРЕДНИЙ БАЛЛ ПО ФАКУЛЬТЕТАМ И СЕЗОНАМ"
+        echo "============================================="
+        psql -d $DATABASE -c "SELECT факультет, сезон, средний_балл, количество_оценок FROM grades_by_faculty_and_season() ORDER BY факультет, порядок_сезона;"
+        ;;
+    203)
+        echo "============================================="
+        echo "СВОДНАЯ ТАБЛИЦА (ГРУППЫ x ДИСЦИПЛИНЫ)"
+        echo "============================================="
+        psql -d $DATABASE -c "SELECT * FROM display_pivot_table();"
+        ;;
+    204)
+        echo "============================================="
+        echo "ЛАБА 7 - ВСЕ ЗАДАЧИ"
+        echo "============================================="
+        ./h 200
+        echo ""
+        echo "=== ЗАДАЧА 1 (порог 4.5) ==="
+        ./h 201 4.5
+        echo ""
+        echo "=== ЗАДАЧА 2 ==="
+        ./h 202
+        echo ""
+        echo "=== ЗАДАЧА 3 ==="
+        ./h 203
         ;;
     *) echo "ОШИБКА: Неизвестная команда $1" ;;
 esac
